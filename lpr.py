@@ -41,6 +41,8 @@ dst=cv2.bitwise_and(closing,hrc)
 kernel3=cv2.getStructuringElement(cv2.MORPH_RECT,(3,2))
 dst=cv2.dilate(dst,kernel2,iterations=1)
 dst=cv2.erode(dst,kernel2,iterations=1)
+kernel3=cv2.getStructuringElement(cv2.MORPH_RECT,(1,2))
+dst=cv2.dilate(dst,kernel3,iterations=1)
 
 #print time3-time1
 cv2.imshow('erode',closing)
@@ -67,28 +69,28 @@ for tour in contours:
 		print rc
 		if abs(max(msc[1])/min(msc[1])-3.8)<1.8:
 			temp = img[rc[1]:(rc[1]+rc[3]),rc[0]:(rc[0]+rc[2])]
-			if dst[rc[1]:rc[1]+rc[3],rc[0]:rc[0]+rc[2]].mean()>90:
-				tem = cv2.cvtColor(temp,cv2.COLOR_BGR2HSV)
-				h=tem[:,:,0].mean()
-				s=tem[:,:,1].mean()
-				if h<130 and h>85 and s>60 :
-					if len(rectangle)!=0:
-						
-						if (s+rc[2]*rc[3])>smax:
-							del rectangle[0]	
-							rectangle.append(rc)
-							smax=(s+rc[2]*rc[3])
-							if msc[1][1]>msc[1][0]:
-								rotation=msc[2]+90
-							else:
-								rotation=msc[2]
-					else:
+	
+			tem = cv2.cvtColor(temp,cv2.COLOR_BGR2HSV)
+			h=tem[:,:,0].mean()
+			s=tem[:,:,1].mean()
+			if h<130 and h>85 and s>60 :
+				if len(rectangle)!=0:
+					
+					if (s+rc[2]*rc[3])>smax:
+						del rectangle[0]	
 						rectangle.append(rc)
 						smax=(s+rc[2]*rc[3])
 						if msc[1][1]>msc[1][0]:
 							rotation=msc[2]+90
 						else:
 							rotation=msc[2]
+				else:
+					rectangle.append(rc)
+					smax=(s+rc[2]*rc[3])
+					if msc[1][1]>msc[1][0]:
+						rotation=msc[2]+90
+					else:
+						rotation=msc[2]
 #Choose by the color
 print('The rectangle has:%d'%len(rectangle))
 if len(rectangle)== 1:
@@ -132,20 +134,21 @@ if abs(rotation)<5:
 else:
 	bwheigh_10=bw.shape[0]/20
 
-
 nepoch=0
 wordsnum=0
+bwscale=0
 while nepoch<4 and wordsnum<6:
 	bw=bw[0:bw.shape[0]-2*nepoch,:] 
 	bw=tools.locatethewords(bw,bwheigh_10,smallflag)
 	bw=tools.cuttheimg(bw,flag=False)
-
+	if nepoch==0:
+		bwscale=8.8*cos(np.deg2rad(rotation))*cos(np.deg2rad(rotation))/(bw.shape[1]/float(bw.shape[0]))
+    	print 'the bwscale is:',bwscale
 	if bw.shape[0]*bw.shape[1]==0:
 		print'Error,could not find th words!'
-		cv2.waitKey(0)
-	words,isone,wordsnum=tools.cutthewords(bw,rotation)
-	print wordsnum
-	nepoch+=1
+		sys.exit(0)
+	words,isone,wordsnum=tools.cutthewords(bw,rotation,bwscale)
+print'nepoch',nepoch
 cv2.imshow('qiege',bw)
 
 
@@ -155,7 +158,7 @@ wordsort=[words[i][0] for i in xrange(num)]
 arrayisone=np.array(isone)
 isone=arrayisone[np.array(np.argsort(wordsort))].tolist()
 print isone
-print isone[6]==1
+
 if num>=1:
 
 	words=sorted(words,key=lambda x:x[0])	
@@ -215,6 +218,17 @@ if num>=1:
 		words.insert(0,tem)
 		isone.insert(0,0)
 		num+=1
+	if words[num-1][2]-words[1][0]>words[num-1][2]/5:
+		xsum=[sum(bw[:,i+words[num-1][0]])for i in xrange(words[num-1][2])]
+		minsum = min(xsum)
+		tem=[0,0,0,0]
+		tem[0]=words[num-1][0]
+		tem[1]=words[num-1][1]
+		tem[2]=minsum-words[num-1][0]+1
+		tem[3]=words[num-1][3]
+		tem=tuple(tem)
+		del words[num-1]
+		words.append(tem)
 
 else:
 	print('cannot find the words!!')

@@ -6,7 +6,7 @@ import math
 import scipy.io as sio
 from numpy.matlib import repmat 
 import copy
-
+import sys
 def zeroMean(dataMat):        
     meanVal=np.mean(dataMat,axis=0)    
     newData=dataMat-meanVal  
@@ -78,7 +78,7 @@ def hsvfilter(img):
             lut1[i]=255
         if i>70:
             lut2[i]=255
-        if i>50 and i<220:
+        if i>55 and i<220:
             lut3[i]=255
     im1=cv2.LUT(hsv[:,:,0],lut1)
     im2=cv2.LUT(hsv[:,:,1],lut2)
@@ -161,32 +161,36 @@ def locatethewords(img,shift=0,smallflag=False):
     return cbw
 def cuttheimg(img,flag=True,x=True,y=True):
     ret,img=cv2.threshold(img,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+    if img==None:
+        print 'error!'
+        sys.exit(0)
     sp=img.shape
+    if sp[1]/sp[0]>6:
+        pass 
     if flag:
         for i in xrange(sp[1]):
             if sum(img[:,i])<=510:
                 img[:,i]=0
-
     xx1=0
     xx2=sp[1]-1
     yy1=0
     yy2=sp[0]-1
     if y:
         for i in xrange(sp[0]):
-            if sum(img[i,:])>255:
+            if sum(img[i,:])>0:
                 yy1=i
                 break
         for i in xrange(sp[0]):
-            if sum(img[sp[0]-i-1,:])>255:
+            if sum(img[sp[0]-i-1,:])>0:
                 yy2=sp[0]-i-1
                 break
     if x:
         for j in xrange(sp[1]):
-            if sum(img[:,j])>255 :
+            if sum(img[:,j])>0 :
                 xx1=j
                 break
         for j in xrange(sp[1]):
-            if sum(img[:,sp[1]-1-j])>255 :
+            if sum(img[:,sp[1]-1-j])>0 :
                 xx2=sp[1]-1-j
                 break
     if yy1-1<0:
@@ -200,11 +204,10 @@ def cuttheimg(img,flag=True,x=True,y=True):
     cut=img[yy1:yy2+1,xx1:xx2+1]
     return cut
 
-def cutthewords(bw,rotation):
+def cutthewords(bw,rotation,bwscale):
         wordsnum=0
-        bwscale=8.8*math.cos(np.deg2rad(rotation))*math.cos(np.deg2rad(rotation))/(bw.shape[1]/float(bw.shape[0]))
         print 'the bw.shape of license is:',bw.shape
-        print 'the bwscale is:',bwscale
+       
         contours,heirs = cv2.findContours(bw.copy(),cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
         for inner in contours:
             rc=cv2.boundingRect(inner)
