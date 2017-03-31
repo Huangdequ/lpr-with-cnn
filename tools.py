@@ -125,7 +125,7 @@ def locatethewords(img,shift=0,smallflag=False):
                 if bw[heigh/2-y-1,x]!=jump:
                     jump=bw[center-y,x]
                     lpixels+=1
-            if lpixels>5 and thb:
+            if lpixels>7 and thb:
                 print'thbup'
                 yy1=heigh/2-y-shift
                 if yy1<0:
@@ -148,7 +148,7 @@ def locatethewords(img,shift=0,smallflag=False):
                 if bw[heigh/2+y-1,x]!=jump:
                     jump=bw[center+y,x]
                     lpixels+=1
-            if lpixels>5 and thb:
+            if lpixels>7 and thb:
                 print'thbdown'
                 yy2=heigh/2+y+shift
                 if yy2>heigh:
@@ -192,11 +192,11 @@ def cuttheimg(img,flag=True,x=True,y=True):
     if yy1-1<0:
         yy1=0
     else:
-        yy1+=1
+        yy1-=1
     if xx1-1<0:
         xx1=0
     else:
-        xx1+=1    
+        xx1-=1    
     cut=img[yy1:yy2+1,xx1:xx2+1]
     return cut
 

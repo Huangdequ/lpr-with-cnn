@@ -67,24 +67,24 @@ for tour in contours:
 		print rc
 		if abs(max(msc[1])/min(msc[1])-3.8)<1.8:
 			temp = img[rc[1]:(rc[1]+rc[3]),rc[0]:(rc[0]+rc[2])]
-			if dst[rc[1]:rc[1]+rc[3],rc[0]:rc[0]+rc[2]].mean()>120:
+			if dst[rc[1]:rc[1]+rc[3],rc[0]:rc[0]+rc[2]].mean()>90:
 				tem = cv2.cvtColor(temp,cv2.COLOR_BGR2HSV)
 				h=tem[:,:,0].mean()
 				s=tem[:,:,1].mean()
 				if h<130 and h>85 and s>60 :
 					if len(rectangle)!=0:
 						
-						if s>smax:
+						if (s+rc[2]*rc[3])>smax:
 							del rectangle[0]	
 							rectangle.append(rc)
-							smax=s
+							smax=(s+rc[2]*rc[3])
 							if msc[1][1]>msc[1][0]:
 								rotation=msc[2]+90
 							else:
 								rotation=msc[2]
 					else:
 						rectangle.append(rc)
-						smax=s
+						smax=(s+rc[2]*rc[3])
 						if msc[1][1]>msc[1][0]:
 							rotation=msc[2]+90
 						else:
@@ -155,10 +155,10 @@ wordsort=[words[i][0] for i in xrange(num)]
 arrayisone=np.array(isone)
 isone=arrayisone[np.array(np.argsort(wordsort))].tolist()
 print isone
-
+print isone[6]==1
 if num>=1:
 
-	words=sorted(words,key=lambda x:x[0])
+	words=sorted(words,key=lambda x:x[0])	
 	while num>7:
 		if (words[1][0]-words[0][0])<(words[2][2]/2) or words[0][3]/words[0][2]>5 or (words[1][1]+words[2][1])/2-words[0][1]>words[2][3]/6:
 			del words[0]
@@ -169,47 +169,47 @@ if num>=1:
 			del isone[num-1]
 			num-=1
 	if num==7 :
-		if (words[6][0]-words[5][0]-words[5][2]<words[6][0] \
-		or (isone[5]==1 and words[6][0]-words[5][0]+words[5][2]<words[6][0]*1.5) ) and isone[6]==1 :
+		if ((words[6][1]/(words[6][0]-words[5][0]+words[5][2])<2/3 and words[5][3]/words[5][2]>5 )\
+		or words[6][0]-words[5][0]-words[5][2]<words[6][2]*1.2 ) and isone[6]==1 :
 			del words[num-1]
 			del isone[num-1]
 			tem=[0,0,0,0]
-			tem[0]=words[0][0]-words[0][2]*1.2
+			tem[0]=int(round(words[0][0]-words[0][2]*1.1))
 			if tem[0]<1:
 				tem[0]=1
+			print '\ntem0:',tem[0]
 			tem[1]=words[0][1]
-			start=words[1][0]-1
-			while sum(bw[:,start])==0:
-				start-=1
-			tem[2]=start-tem[0]
+			tem[2]=int(round(words[0][2]*1.3))
+			print 'words[1][0]:',words[0][0]
+			print 'sum:',(tem[2]+tem[0])
+			if tem[2]+tem[0]>words[0][0]:
+				tem[2]=words[0][0]-tem[0]-2
 			tem[3]=words[0][3]
 			tem=tuple(tem)
 			words.insert(0,tem)
 			isone.insert(0,0)
 		else:
 			tem=[0,0,0,0]
-			tem[0]=words[1][0]-words[1][2]*1.2
+			tem[0]=int(round(words[1][0]-words[1][2]*1.1))
 			if tem[0]<1:
 				tem[0]=1
 			tem[1]=words[1][1]
-			start=words[1][0]-1
-			while sum(bw[:,start])==0:
-				start-=1
-			tem[2]=start-tem[0]
+			tem[2]=int(round(words[1][2]*1.3))
+			if (tem[2]+tem[0])>words[1][0]:
+				tem[2]=words[1][0]-tem[0]-2
 			tem[3]=words[1][3]
 			tem=tuple(tem)
 			del words[0]
 			words.insert(0,tem)
 	elif num==6:
 		tem=[0,0,0,0]
-		tem[0]=words[0][0]-words[0][2]*1.2
+		tem[0]=int(round(words[0][0]-words[0][2]*1.1))
 		if tem[0]<1:
 			tem[0]=1
 		tem[1]=words[0][1]
-		start=words[0][0]-1
-		while sum(bw[:,start])==0:
-			start-=1
-		tem[2]=start-tem[0]
+		tem[2]=int(round(words[1][2]*1.3))
+		if (tem[2]+tem[0])>words[0][0]:
+			tem[2]=words[0][0]-tem[0]-2
 		tem[3]=words[0][3]
 		tem=tuple(tem)
 		words.insert(0,tem)
