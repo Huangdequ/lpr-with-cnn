@@ -51,7 +51,7 @@ dst=cv2.dilate(dst,kernel3,iterations=1)
 cv2.imshow('erode',closing)
 cv2.imshow('dst',dst)
 print dst.shape
-#Choose by the width and heigh
+
 contours,heirs = cv2.findContours(dst.copy(),cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
 rectangle=[]
 rotation=0
@@ -96,7 +96,7 @@ for tour in contours:
 						rotation=msc[2]+90
 					else:
 						rotation=msc[2]
-#Choose by the color
+
 print('The rectangle has:%d'%len(rectangle))
 
 if len(rectangle)== 1:
@@ -119,7 +119,7 @@ else:
 	tophat= cv2.morphologyEx(gasus,cv2.MORPH_TOPHAT,kernel)
 	tophat=cv2.medianBlur(tophat,5)
 	edge=cv2.Sobel(tophat,-1,1,0)
-	#edge=cv2.blur(edge,(3,3))
+	
 	cv2.imshow('edges',edge)
 	ret,binary=cv2.threshold(edge,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
 	kernel1=cv2.getStructuringElement(cv2.MORPH_RECT,(30,7))
@@ -135,7 +135,7 @@ else:
 	cv2.imshow('erode',closing)
 	cv2.imshow('dst',dst)
 	print dst.shape
-	#Choose by the width and heigh
+
 	contours,heirs = cv2.findContours(dst.copy(),cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
 	rectangle=[]
 	rotation=0
