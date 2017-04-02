@@ -74,11 +74,11 @@ def hsvfilter(img):
     lut2=np.zeros(256)
     lut3=np.zeros(256)
     for i in range(0,255):
-        if i<130 and i>95:
+        if i<130 and i>97:
             lut1[i]=255
         if i>70:
             lut2[i]=255
-        if i>55 and i<220:
+        if i>55:
             lut3[i]=255
     im1=cv2.LUT(hsv[:,:,0],lut1)
     im2=cv2.LUT(hsv[:,:,1],lut2)
@@ -227,7 +227,7 @@ def cutthewords(bw,rotation,bwscale):
             else:
                 msc=cv2.minAreaRect(tour)
 
-                if msc[1][1]*msc[1][0]!=0 and abs(max(msc[1])/min(msc[1])-3.8*bwscale)<=4 and \
+                if rc[3]>rc[2] and msc[1][1]*msc[1][0]!=0 and abs(max(msc[1])/min(msc[1])-4.5*bwscale)<=4 and \
                     rc[0] >=(bw.shape[1]/3) and rc[2]*rc[3]>(bw.shape[0]*1.2):
                     print msc
                     rsc=[]
