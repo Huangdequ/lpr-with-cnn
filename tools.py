@@ -275,9 +275,12 @@ def get_hanzi(h1):
     elif h1== 31: h1='浙'
     return h1
 def get_26zimu(h2):
-    h2=chr(h2+64)
+    if h2<9:
+        h2=chr(h2+64)
+    else:
+        h2=chr(h2+65)
     return h2
- 
+    
 def get_zimu_shuzi(h):
     if h<=8:           # A ~ H
         h=chr(h+64)
