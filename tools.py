@@ -277,7 +277,7 @@ def get_hanzi(h1):
 def get_26zimu(h2):
     h2=chr(h2+64)
     return h2
-
+ 
 def get_zimu_shuzi(h):
     if h<=8:           # A ~ H
         h=chr(h+64)
