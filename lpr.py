@@ -354,7 +354,7 @@ for i in xrange(num):
 	plt.subplot(2,num,i+1)
 	ar=words[i]
 	temp=bw[int(ar[1]):int(ar[1]+ar[3]+1),int(ar[0]):int(ar[0]+ar[2]+1)]
-
+ 
 	temp=tools.cuttheimg(temp,flag=False)	
 	plt.imshow(temp,cmap='gray')
 	plt.axis("off")
